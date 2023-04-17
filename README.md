@@ -10,11 +10,13 @@ used in those mission scripts.
 
 2. Place the @DGCore folder and all its content into your server (same directory as @ExileServer).
 
-3. Start your server.
+3. Add the line `@DGCore` to your `-servermods=` launch parameter
 
-4. Check in your server logs if you see the message `"DGCore succesfully initialized!"`.
+4. Start your server
 
-5. If you do not see that message, all other DG script will also fail. So contact me at the Discord.
+5. Check in your server logs if you see the message `"DGCore succesfully initialized!"`.
+
+6. If you do not see that message, all other DG script will also fail. So contact me at the Discord.
 
 # Contact
 
