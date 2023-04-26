@@ -392,7 +392,7 @@ DGCore_CivilianVehicles =
 	"C_Truck_02_fuel_F",
 	
 	"B_GEN_Offroad_01_gen_F", // APEX
-	"C_Offroad_02_unarmed_F",
+	"C_Offroad_02_unarmed_F"//, 
 	
 	"Golf_Civ_Black", // Exile
 	"Golf_Civ_pink", // Exile
@@ -402,28 +402,31 @@ DGCore_CivilianVehicles =
 	"Exile_Car_Lada_Green", // Exile
 	"Exile_Car_Lada_White", // Exile
 	"Exile_Car_OldTractor_Red", // Exile
-	"Exile_Car_SUVXL_Black", // Exile
+	"Exile_Car_SUVXL_Black" // ,  // < don't forget this comma if you enable stuff below! // Exile
 	
-	"dbo_CIV_ol_bike", // Exile bike
-	"dbo_CIV_new_bike", // Exile bike
+	// "dbo_CIV_ol_bike", // Exile bike
+	// "dbo_CIV_new_bike", // Exile bike
 	
-	"CUP_C_Bus_City_CIV",
-	"CUP_C_Pickup_unarmed_CIV",
-	"CUP_C_Datsun",
-	"rhsusf_m998_w_2dr",
-	"CUP_O_UAZ_Open_RU",
-	"CUP_O_Ural_Empty_RU",
-	"CUP_O_Volha_SLA",
-	"CUP_O_SUV_TKA",
-	"CUP_O_Hilux_unarmed_TK_INS",
-	"CUP_I_Van_Transport_ION",
-	"CUP_I_Van_Cargo_ION",
-	"CUP_B_UAZ_Unarmed_ACR",
-	"CUP_B_LR_Ambulande_GB_D",
-	"CUP_B_MTVR_BAF_DES",
-	"CUP_B_CDF_Militia_MNT",
-	"CUP_B_Ural_Empty_CDF",
-	"CUP_B_Tractor_CDF"
+	// CUP
+	// "CUP_C_Bus_City_CIV",
+	// "CUP_C_Pickup_unarmed_CIV",
+	// "CUP_C_Datsun",
+	// "CUP_O_UAZ_Open_RU",
+	// "CUP_O_Ural_Empty_RU",
+	// "CUP_O_Volha_SLA",
+	// "CUP_O_SUV_TKA",
+	// "CUP_O_Hilux_unarmed_TK_INS",
+	// "CUP_I_Van_Transport_ION",
+	// "CUP_I_Van_Cargo_ION",
+	// "CUP_B_UAZ_Unarmed_ACR",
+	// "CUP_B_LR_Ambulande_GB_D",
+	// "CUP_B_MTVR_BAF_DES",
+	// "CUP_B_CDF_Militia_MNT",
+	// "CUP_B_Ural_Empty_CDF",
+	// "CUP_B_Tractor_CDF",
+	
+	// RHS
+	// "rhsusf_m998_w_2dr"
 ];
 
 DGCore_CivilianPlanes = 
@@ -435,25 +438,25 @@ DGCore_CivilianPlanes =
 	"Exile_Plane_AN2_Stripe", // EXILE
 	"Exile_Plane_AN2_Green", // EXILE
 	"Exile_Plane_AN2_White", // Exile
-	"GNT_C185F", // Exile
+	"GNT_C185F" //, < don't forget this comma if you enable stuff below! // Exile
 	
-	"CUP_I_CESSNA_T41_UNARMED_HIL",
-	"CUP_B_AC47_Spooky_USA",
-	"CUP_O_C47_SLA",
-	"CUP_O_AN2_TK",
-	"CUP_I_Plane_ION",
-	"CUP_I_CESSNA_T41_UNARMED_ION",
-	"CUP_I_CESSNA_T41_UNARMED_LDF",
-	"CUP_I_CESSNA_T41_UNARMED_RACS",
-	"CUP_C_C47_CIV",
-	"CUP_C_Plane_Orbit",
-	"CUP_C_DC3_CIV",
-	"CUP_C_DC3_TranoAir_CIV",
-	"CUP_C_AN2_CIV",
-	"CUP_C_CESSNA_CIV",
-	"CUP_C_DC3_ChernAvia_CIV",
-	"CUP_C_AN2_AEROSCHROT_TK_CIV",
-	"CUP_C_AN2_AIRTAK_TK_CIV"
+	// "CUP_I_CESSNA_T41_UNARMED_HIL",
+	// "CUP_B_AC47_Spooky_USA",
+	// "CUP_O_C47_SLA",
+	// "CUP_O_AN2_TK",
+	// "CUP_I_Plane_ION",
+	// "CUP_I_CESSNA_T41_UNARMED_ION",
+	// "CUP_I_CESSNA_T41_UNARMED_LDF",
+	// "CUP_I_CESSNA_T41_UNARMED_RACS",
+	// "CUP_C_C47_CIV",
+	// "CUP_C_Plane_Orbit",
+	// "CUP_C_DC3_CIV",
+	// "CUP_C_DC3_TranoAir_CIV",
+	// "CUP_C_AN2_CIV",
+	// "CUP_C_CESSNA_CIV",
+	// "CUP_C_DC3_ChernAvia_CIV",
+	// "CUP_C_AN2_AEROSCHROT_TK_CIV",
+	// "CUP_C_AN2_AIRTAK_TK_CIV"
 ];
 
 DGCore_CivilianUniforms =
@@ -486,15 +489,16 @@ DGCore_CivilianUniforms =
 	"U_C_Man_casual_6_F", // APEX
 	"U_C_man_sport_1_F",	//APEX
 	"U_C_man_sport_2_F",	//APEX
-	"U_C_man_sport_3_F",	//APEX
-	"CUP_U_C_Villager_01",
-	"CUP_U_C_Villager_02",
-	"CUP_U_C_Villager_03",
-	"CUP_U_C_Villager_04",
-	"CUP_U_C_Worker_01",
-	"CUP_U_C_Worker_02",
-	"CUP_U_C_Worker_03",
-	"CUP_U_C_Worker_04"
+	"U_C_man_sport_3_F"	//APEX
+	
+	// "CUP_U_C_Villager_01",
+	// "CUP_U_C_Villager_02",
+	// "CUP_U_C_Villager_03",
+	// "CUP_U_C_Villager_04",
+	// "CUP_U_C_Worker_01",
+	// "CUP_U_C_Worker_02",
+	// "CUP_U_C_Worker_03",
+	// "CUP_U_C_Worker_04"
 ];
 	
 DGCore_CivilianHeadgear =
