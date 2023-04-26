@@ -26,15 +26,43 @@ class CfgFunctions {
 		class DG_Vehicles {
 			file = "DGCore\Compiles\Vehicles";
 			class unFlipVehicle{};
+			class addIdleMonitor{};
+			class vehicleDoMove{};
+			class addDeletionMonitor{};
+			class addMarkerMonitor{};
 		};
 		class DG_Functions {
 			file = "DGCore\Compiles\Functions";
 			class selectMagazine{};
+			class nearestBuilding{};
+			class nearestAirportId{};
+		};
+		class DG_Groups {
+			file = "DGCore\Compiles\Groups";
+			class spawnCivilPatrol{};
+			class spawnCivilPlane{};
+			class spawnGroup {};
+			class countAI {};
+			class getUnitInfo {};
+		};
+		class DG_Units {
+			file = "DGCore\Compiles\Units";
+			class spawnUnit {};
+			class spawnCivilian {};
+			class addEventHandlers {};
 		};
 		class DG_Utilities {
 			file = "DGCore\Compiles\Utilities";
 			class findWorld {};
 			class log {};
+			class getInversePos{};
+		};
+		class DG_Players {
+			file = "DGCore\Compiles\Players";
+			class giveTakeRespect {};
+			class giveTakeTabs {};
+			class updatePlayerKills {};
+			class getNearbyPlayers {};
 		};
 	};
 };

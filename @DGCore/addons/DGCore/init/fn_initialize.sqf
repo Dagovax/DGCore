@@ -34,20 +34,30 @@ switch (toLowerANSI DGCore_modType) do
 	case "exile": 
 	{
 		DGCore_Side = EAST;
+		DGCore_CivilSide = CIVILIAN;
+		DG_playerUnitTypes = ["Exile_Unit_Player"];
 		DGCore_playerSide = RESISTANCE;
-		DGCore_unitType = "O_Soldier_lite_F";
+		DGCore_allyTypes = ["I_soldier_F"];
+		DGCore_enemyTypes = ["O_A_soldier_F"];
+		DGCore_civilianTypes = ["C_man_1"];
 	};
 	case "epoch": 
 	{
 		DGCore_Side = RESISTANCE;
+		DGCore_CivilSide = CIVILIAN;
 		DG_playerUnitTypes = ["Epoch_Male_F","Epoch_Female_F"];
 		DGCore_playerSide = WEST;		
-		DGCore_unitType = "I_Soldier_M_F";			
+		DGCore_allyTypes = ["B_G_Soldier_AR_F"];	
+		DGCore_enemyTypes = ["I_Soldier_M_F"];
+		DGCore_civilianTypes = ["C_man_1"];
 	};
 	default {
 		DGCore_Side = EAST;
-		DGCore_unitType = "O_Soldier_lite_F";
+		DGCore_CivilSide = CIVILIAN;
 		DGCore_playerSide = WEST;		
+		DGCore_allyTypes = ["B_G_Soldier_AR_F"];
+		DGCore_enemyTypes = ["O_Soldier_lite_F", "O_A_soldier_F"];
+		DGCore_civilianTypes = ["C_man_1"];
 	};
 };
 [format["DGCore_Side = %1",DGCore_Side]] call DGCore_fnc_log;
@@ -58,6 +68,10 @@ private _buildDate = getText(configFile >> "DGCoreBuild" >> "buildDate");
 
 [] call DGCore_fnc_findWorld; // Initialize world data
 
+execvm "DGCore\config\DGCore_config.sqf"; // Load user config
+
+waitUntil{uiSleep 1; !(isNil "DGCore_Initialized")};
+
 ["DGCore succesfully initialized!"] call DGCore_fnc_log;
 [format["Build= %1 | Build Date= %2 | Version= %3 | Initialized at %4 with DGCore_modType = %5",_build,_buildDate, _ver,diag_tickTime,DGCore_modType]] call DGCore_fnc_log;
-DGCore_Initialized = true;
+
