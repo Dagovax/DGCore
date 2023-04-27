@@ -14,6 +14,9 @@ DGCore_CleanupTime			= 5*60; // Time in seconds an object will be timed out for 
 DGCore_EnableLogging		= true;
 DGCore_LogLevel				= "information"; // choose between:  "information" | "debug" | "errors" | "warnings"
 
+// Notification
+DGCore_EnableKillMessage	= true; // Plays a sound and gives the kill message in side chat. 
+
 // AI Settings
 DGCore_PlayerExpRange 		= [25000, 75000, 150000]; // Range of the player's experience until it reaches next level. [easy > normal, normal > hard, hard > extreme] (for AI that targets a player)
 DGCore_BaseLevelRange		= [3, 6, 8]; // Range of base level it reaches next difficulty level. [easy > normal, normal > hard, hard > extreme] (used for base raids)

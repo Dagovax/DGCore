@@ -28,6 +28,7 @@ class CfgFunctions {
 			class unFlipVehicle{};
 			class addIdleMonitor{};
 			class vehicleDoMove{};
+			class planeDoLand{};
 			class addDeletionMonitor{};
 			class addMarkerMonitor{};
 		};

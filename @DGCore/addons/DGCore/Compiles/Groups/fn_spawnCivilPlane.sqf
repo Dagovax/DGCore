@@ -6,7 +6,9 @@
 
 	Parametsrs:
 		_class: class name of the aircraft - Optional
-		_allowDamage: plane will can be shut down - Optional | Default false
+		_allowDamage: plane can be shot down - Optional | Default false
+		_side: Side that the AI will be on
+		_initialWaitTime: Initial wait time in seconds the plane will wait before taking off. Default 0 (instant take off)
 
 	Example: [] call DGCore_fnc_spawnCivilPlane;
 
@@ -14,7 +16,7 @@
 
 	Copyright 2023 by Dagovax
 */
-params[["_class", ""], ["_allowDamage", false]];
+params[["_class", ""], ["_allowDamage", false], ["_side", DGCore_CivilSide], ["_initialWaitTime", 0], ["_setCaptive", true]];
 if(_class isEqualTo "") then
 {
 	_class = selectRandom DGCore_CivilianPlanes;
@@ -109,14 +111,17 @@ if(isNull _plane || !alive _plane) exitWith
 	[format["Failed to spawn the %1 @ %2 (did it EXPLODE)?", _class, _spawnPos], "DGCore_fnc_spawnCivilPlane", "warning"] call DGCore_fnc_log;
 };
 
-_civilianPilot = [_spawnPos, "", _plane] call DGCore_fnc_spawnCivilian;
+_civilianPilot = [_spawnPos, "", _side, _setCaptive, _plane] call DGCore_fnc_spawnCivilian;
 if(isNil "_civilianPilot") exitWith{}; 
 if(isNull _civilianPilot) exitWith{};
 _civilianGroup = group _civilianPilot;
 
-[_plane, _planeName, _civilianPilot, _spawnPos, _landAirportInfo] spawn
+[_plane, _planeName, _civilianPilot, _spawnPos, _landAirportInfo, _initialWaitTime] spawn
 {
-	params["_plane", "_planeName", "_civilianPilot", "_spawnPos", "_landAirportInfo"];
+	params["_plane", "_planeName", "_civilianPilot", "_spawnPos", "_landAirportInfo", "_initialWaitTime"];
+	// First wait until initial wait time;
+	waitUntil{sleep _initialWaitTime; true };
+	
 	// Add the move command
 	_movePos = [_spawnPos] call DGCore_fnc_getInversePos;
 	
@@ -161,8 +166,16 @@ _civilianGroup = group _civilianPilot;
 		deleteVehicleCrew _plane;
 		deleteVehicle _plane;
 	};
-	_plane landAt _landAirportId;
-	waitUntil { unitReady _plane || !alive _plane};
+	
+	_landAtVariable = [_plane, _landAirportId, _landAirportInfo select 0] call DGCore_fnc_planeDoLand;
+	waitUntil {uiSleep 1; !(isNil "_landAtVariable")}; // Wait until value retrieved
+	while {!isNull _plane && alive _plane} do
+	{
+		_planeLanded = _plane getVariable [_landAtVariable, false];
+		if(_planeLanded) exitWith{};
+		uiSleep 2;
+	};
+	
 	if(!alive _plane || !alive _civilianPilot) exitWith
 	{
 		deleteVehicle _civilianPilot;
@@ -176,6 +189,7 @@ _civilianGroup = group _civilianPilot;
 	[format["Civilian group %1 landed at the airportID %2, moving out the plane %3 now!", _civilianGroup, _landAirportId, _planeName], "DGCore_fnc_spawnCivilPlane", "information"] call DGCore_fnc_log;
 	_plane setVehicleLock "UNLOCKED"; // Unlocked
 	_plane allowDamage true;
+	_civilianGroup setVariable ["DGCore_civilReady", true];
 	uiSleep 2;
 	
 	[_plane, 0, 120] call DGCore_fnc_addDeletionMonitor; // This will remove the plane when no player enters it after 120 seconds!
@@ -200,8 +214,14 @@ _civilianGroup = group _civilianPilot;
 			_allBuildingPositions = [_nearestBuilding] call BIS_fnc_buildingPositions;
 			_randomPos = selectRandom _allBuildingPositions;
 			_civilianGroup setSpeedMode "LIMITED";
-			_civilianGroup move _randomPos;
-			waitUntil { unitReady _civilianPilot };
+			_civilianPilot move _randomPos;
+			while {!unitReady _civilianPilot && alive _civilianPilot} do
+			{
+				if(unitReady _civilianPilot) exitWith{};
+				_newPos = getPos _civilianPilot;
+				if (_newPos distance2D _randomPos < 10) exitWith{}; // To remove him looping in circles
+				uiSleep 2;
+			};
 			{deleteVehicle _x;} forEach units _civilianGroup;
 			deleteGroup _civilianGroup;
 		} else

@@ -5,20 +5,17 @@
 	Purpose: spawns a civilian vehicle (at given coordinates)
 
 	Parametsrs:
-		_pos: position to spawn this unit
 		_class: class name of the unit
-		_vehicle: vehicle object to spawn this unit in. (if no more room insinde this vehicle, unit will not create!)
-		_group: group to add this unit too. If _vehicle is not null, and it has crew, that group will be used instead.
-		_uniform: uniform class to add to this civilian
-		_headGear: headgear to add to this civilian
+		_pos: position to spawn this unit
+		_side: side the AI will be on
 
-	Example: [[10400,10400,0], "C_man_1"] call DGCore_fnc_spawnCivilian;
+	Example: ["C_man_1", [10400,10400,0], INDEPENDENT] call DGCore_fnc_spawnCivilPatrol;
 
 	Returns: Civilian Group
 
 	Copyright 2023 by Dagovax
 */
-params[["_class", ""], ["_pos", [-1,-1,-1]]];
+params[["_class", ""], ["_pos", [-1,-1,-1]], ["_side", DGCore_CivilSide]];
 if(_class isEqualTo "") then
 {
 	_class = selectRandom DGCore_CivilianVehicles;
@@ -58,7 +55,7 @@ if(isNull _vehicle || !alive _vehicle) exitWith
 	[format["Failed to spawn the %1 @ %2 (did it EXPLODE)?", _class, _pos], "DGCore_fnc_spawnCivilPatrol", "warning"] call DGCore_fnc_log;
 };
 
-_civilianDriver = [_pos, "", _vehicle] call DGCore_fnc_spawnCivilian;
+_civilianDriver = [_pos, "", _side, true, _vehicle] call DGCore_fnc_spawnCivilian;
 if(isNil "_civilianDriver") exitWith{}; 
 if(isNull _civilianDriver) exitWith{};
 _civilianGroup = group _civilianDriver;

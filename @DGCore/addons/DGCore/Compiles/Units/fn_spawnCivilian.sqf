@@ -19,7 +19,7 @@
 	Copyright 2023 by Dagovax
 */
 
-params[["_pos", [0,0,0]], ["_class", ""], ["_vehicle", objNull],  ["_group", grpNull], ["_uniform", ""] ,["_headGear", ""]];
+params[["_pos", [0,0,0]], ["_class", ""], ["_side", DGCore_CivilSide], ["_setCaptive", true], ["_vehicle", objNull],  ["_group", grpNull], ["_uniform", ""] ,["_headGear", ""]];
 if(_pos isEqualTo [0,0,0]) exitWith
 {
 	[format["Not enough valid params to spawn civilian unit! -> _pos = %1", _pos], "DGCore_fnc_spawnCivilian", "error"] call DGCore_fnc_log;
@@ -61,12 +61,12 @@ if(!isNull _vehicle && !_assignToVehicle) exitWith
 
 if(isNull _group) then // If _group equals Null at this point, create a new group
 {
-	_group = createGroup DGCore_CivilSide;
+	_group = createGroup _side;
 };
 
 _civilian = _group createUnit [_civilianClass, _civilianPos, [], 0, "FORM"]; // Create the unit
 _civilian allowDamage false; // First initialize this dude.
-_civilian setCaptive true;
+_civilian setCaptive _setCaptive;
 _group setCombatMode "BLUE";
 _group setBehaviour "CARELESS";
 _group allowFleeing 0;
