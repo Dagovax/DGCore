@@ -219,7 +219,7 @@ _civilianGroup = group _civilianPilot;
 			{
 				if(unitReady _civilianPilot) exitWith{};
 				_newPos = getPos _civilianPilot;
-				if (_newPos distance2D _randomPos < 10) exitWith{}; // To remove him looping in circles
+				if (_newPos distance2D _randomPos < 20) exitWith{}; // To remove him looping in circles
 				uiSleep 2;
 			};
 			{deleteVehicle _x;} forEach units _civilianGroup;

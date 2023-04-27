@@ -395,7 +395,7 @@ DGCore_CivilianVehicles =
 	"C_Truck_02_fuel_F",
 	
 	"B_GEN_Offroad_01_gen_F", // APEX
-	"C_Offroad_02_unarmed_F"//, 
+	"C_Offroad_02_unarmed_F", // APEX
 	
 	"Golf_Civ_Black", // Exile
 	"Golf_Civ_pink", // Exile
