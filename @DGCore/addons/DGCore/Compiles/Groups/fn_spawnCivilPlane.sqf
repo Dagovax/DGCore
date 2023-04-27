@@ -197,9 +197,9 @@ _civilianGroup = group _civilianPilot;
 	if(!isNull _civilianPilot && alive _civilianPilot) then // Let the civilian slowly move to a house and move him there
 	{	
 		unassignVehicle _civilianPilot;
-		if(vehicle _civilianPilot != _civilianPilot) then
+		if(vehicle _civilianPilot != _civilianPilot) then // Unit is still in the plane
 		{
-			while {vehicle _civilianPilot == _civilianPilot} do // Ensure this dude is out of the vehicle
+			while {vehicle _civilianPilot != _civilianPilot} do // Ensure this dude is out of the vehicle
 			{
 				[_civilianPilot] orderGetIn false;
 				uiSleep 2;
