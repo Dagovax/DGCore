@@ -24,29 +24,30 @@ if(isNull _vehicle) exitWith
 [_vehicle, _killTime, _cleanUpTime] spawn
 {
 	params ["_vehicle", "_killTime", "_cleanUpTime"];
-	waitUntil { unitReady _vehicle};
+	//waitUntil { unitReady _vehicle};
 	[format["Started deletion monitor for: _vehicle = %1 | _killTime = %2 | _cleanUpTime = %3", _vehicle, _killTime, _cleanUpTime], "DGCore_fnc_addDeletionMonitor", "debug"] call DGCore_fnc_log;
 	_killTimer = 0;
 	_vehicleKilled = false;
-	if(_killTime > 0) then
+	_playerInVehicle = false;
+	
+	_nearbyPlayers = [getPos _vehicle, 4000] call DGCore_fnc_getNearbyPlayers;
+	if(count _nearbyPlayers <= 0) then
+	{
+		[format["No players nearby monitored vehicle for deletion [%1]! Setting _killTime to zero and ignoring vehicle explosion...", _vehicle], "DGCore_fnc_addDeletionMonitor", "debug"] call DGCore_fnc_log;
+		_killTime = -1; // no players in range. No need to explode something. Delete vehicle instantly
+	};
+	
+	if(_killTime >= 0) then
 	{
 		while {!isNull _vehicle && alive _vehicle} do
 		{
 			_playerInVehicle = false;
+			_playersInVehicle = [_vehicle] call DGCore_fnc_getPlayersInVehicle;
+			if(count _playersInVehicle > 0) exitWith
 			{
-				if(alive _x) then
-				{
-					_unit = _x;
-					{
-						if(_unit isKindOf _x) exitWith
-						{
-							_playerInVehicle = true;
-						};
-					} forEach DG_playerUnitTypes;
-				};
-				if(_playerInVehicle) exitWith{};
-			} forEach crew _vehicle;
-			if(_playerInVehicle) exitWith{}; // Player entered the vehicle
+				[format["Players %1 entered the %2. Deletion monitor for this vehicle discontinued!", _playerInVehicle, _vehicle], "DGCore_fnc_addDeletionMonitor", "information"] call DGCore_fnc_log;
+				_playerInVehicle = true;
+			};
 			
 			if(_killTimer >= _killTime) exitWith
 			{
@@ -59,6 +60,7 @@ if(isNull _vehicle) exitWith
 			_killTimer = _killTimer + 5;
 		};
 	};
+	if(_playerInVehicle) exitWith{}; // Already player in vehicle
 	
 	_cleanUpTimer = 0;
 	while {!isNull _vehicle} do
@@ -66,20 +68,12 @@ if(isNull _vehicle) exitWith
 		if(isNull _vehicle) exitWith{}; // Someone cleaned the vehicle already
 		
 		_playerInVehicle = false;
+		_playersInVehicle = [_vehicle] call DGCore_fnc_getPlayersInVehicle;
+		if(count _playersInVehicle > 0) exitWith
 		{
-			if(alive _x) then
-			{
-				_unit = _x;
-				{
-					if(_unit isKindOf _x) exitWith
-					{
-						_playerInVehicle = true;
-					};
-				} forEach DG_playerUnitTypes;
-			};
-			if(_playerInVehicle) exitWith{};
-		} forEach crew _vehicle;
-		if(_playerInVehicle) exitWith{}; // Player entered the vehicle
+			[format["Players %1 entered the %2. Deletion monitor for this vehicle discontinued!", _playerInVehicle, _vehicle], "DGCore_fnc_addDeletionMonitor", "information"] call DGCore_fnc_log;
+			_playerInVehicle = true;
+		};
 		
 		if(_cleanUpTimer >= _cleanUpTime) exitWith
 		{

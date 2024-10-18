@@ -13,6 +13,8 @@
 	Copyright 2023 by Dagovax
 */
 
+[format["Loading world data for map '%1'",toLowerANSI worldName], "DGCore_fnc_findWorld", "debug"] call DGCore_fnc_log;
+
 switch (toLowerANSI worldName) do 
 {// These may need some adjustment - including a test for shore or water should help as well to avoid missions spawning on water.
 		case "altis":{DG_mapCenter = [12000,10000,0]; DG_mapRange = 25000;};
@@ -52,6 +54,7 @@ DG_mapMarker setMarkerShapeLocal "RECTANGLE";
 DG_mapMarker setMarkerSizeLocal [DG_mapRange,DG_mapRange];
 DG_world = worldname;
 DG_worldSize = worldSize;
+DG_mapDistance = worldSize * 0.75;
 DG_axis = DG_worldSize / 2;
 DG_mapCenter = [DG_axis, DG_axis, 0];
 DG_mapRadius = sqrt 2 * DG_axis;

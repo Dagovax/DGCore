@@ -15,8 +15,8 @@
 
 	Copyright 2023 by Dagovax
 */
-params [["_plane", objNull], ["_airportID", -1], ["_ilsPosition", [-1, -1, -1]]];
-if(isNull _plane || _airportID isEqualTo -1 || _ilsPosition isEqualTo [-1,-1,-1]) exitWith
+params [["_plane", objNull], "_airportID", ["_ilsPosition", [-1, -1, -1]]];
+if(isNull _plane || isNil "_airportID" || _ilsPosition isEqualTo [-1,-1,-1]) exitWith
 {
 	[format["Not enough valid params to add waypoint landAt checker to plane! -> _plane = %1 | _airportID = %2 | _ilsPosition = %3", _plane, _airportID, _ilsPosition], "DGCore_fnc_planeDoLand", "error"] call DGCore_fnc_log;
 };
@@ -33,7 +33,7 @@ _vicName = getText (configFile >> "CfgVehicles" >> (typeOf _plane) >> "displayNa
 [_variable, _plane, _airportID, _ilsPosition, _vicName] spawn
 {
 	params[["_variable", ""],["_plane", objNull], "_airportID", ["_ilsPosition", [-1, -1, -1]], ["_vicName", ""]];
-	if(isNull _plane || _airportID isEqualTo -1 || _ilsPosition isEqualTo [-1,-1,-1]) exitWith
+	if(isNull _plane || isNil "_airportID" || _ilsPosition isEqualTo [-1,-1,-1]) exitWith
 	{
 		[format["Not enough valid params to add waypoint landAt checker to plane! -> _plane = %1 | _airportID = %2 | _ilsPosition = %3", _plane, _airportID, _ilsPosition], "DGCore_fnc_planeDoLand", "error"] call DGCore_fnc_log;
 	};
@@ -50,15 +50,25 @@ _vicName = getText (configFile >> "CfgVehicles" >> (typeOf _plane) >> "displayNa
 		_currentPos = getPos _plane;
 		_height = _currentPos select 2;
 		_distanceFromIls = _currentPos distance2D _ilsPosition;
-		if(_distanceFromIls <= 100) exitWith // Plane is landing
+		if(_distanceFromIls <= 150) exitWith // Plane is landing
 		{
 			[format["The %1 is on its final approach -> _distanceFromIls = %2 | _height = %3", _vicName, _distanceFromIls, _height], "DGCore_fnc_planeDoLand", "debug"] call DGCore_fnc_log;
-			waitUntil { unitReady _plane || !alive _plane};
+			while {alive _plane} do
+			{
+				if(speed _plane < 2) exitWith {}; // Plane stopped
+				uiSleep 2;
+			};
 			[format["The %1 succesfully landed At airport with ID %2!", _vicName, _airportID], "DGCore_fnc_planeDoLand", "debug"] call DGCore_fnc_log;
 			_plane setVariable [_variable, true];
 		};
 
-		if(_height < 10 && _distanceFromIls > 100) then
+		if(_height < 10 && _distanceFromIls > 150 && speed _plane < 2) exitWith // Plane probably crashed
+		{
+			deleteVehicleCrew _plane;
+			deleteVehicle _plane;
+		};
+
+		if(_height < 10 && _distanceFromIls > 150) then
 		{
 			[format["The %1 reached too low height (%4) and is too far from the landing point (%5)! Performing landAt command now at airportId %2 with ilsPosition = %3 !", _vicName, _airportID, _ilsPosition, _height, _distanceFromIls], "DGCore_fnc_planeDoLand", "debug"] call DGCore_fnc_log;
 			_plane landAt _airportID;

@@ -39,7 +39,8 @@ switch (toLowerANSI DGCore_modType) do
 		DGCore_playerSide = RESISTANCE;
 		DGCore_allyTypes = ["I_soldier_F"];
 		DGCore_enemyTypes = ["O_A_soldier_F"];
-		DGCore_civilianTypes = ["C_man_1"];
+		DGCore_civilianTypes = ["CUP_C_C_Citizen_Random"];
+		DGCore_civilianPilot = "CUP_C_C_Pilot_01";
 	};
 	case "epoch": 
 	{
@@ -50,14 +51,17 @@ switch (toLowerANSI DGCore_modType) do
 		DGCore_allyTypes = ["B_G_Soldier_AR_F"];	
 		DGCore_enemyTypes = ["I_Soldier_M_F"];
 		DGCore_civilianTypes = ["C_man_1"];
+		DGCore_civilianPilot = "CUP_C_C_Pilot_01";
 	};
 	default {
 		DGCore_Side = EAST;
 		DGCore_CivilSide = CIVILIAN;
+		DG_playerUnitTypes = ["Exile_Unit_Player"];
 		DGCore_playerSide = WEST;		
 		DGCore_allyTypes = ["B_G_Soldier_AR_F"];
 		DGCore_enemyTypes = ["O_Soldier_lite_F", "O_A_soldier_F"];
 		DGCore_civilianTypes = ["C_man_1"];
+		DGCore_civilianPilot = "CUP_C_C_Pilot_01";
 	};
 };
 [format["DGCore_Side = %1",DGCore_Side]] call DGCore_fnc_log;
@@ -67,6 +71,7 @@ private _build = getNumber(configFile >> "DGCoreBuild" >> "build");
 private _buildDate = getText(configFile >> "DGCoreBuild" >> "buildDate");
 
 [] call DGCore_fnc_findWorld; // Initialize world data
+[] call DGCore_fnc_findMods; // Initialize loaded mods
 
 execvm "DGCore\config\DGCore_config.sqf"; // Load user config
 

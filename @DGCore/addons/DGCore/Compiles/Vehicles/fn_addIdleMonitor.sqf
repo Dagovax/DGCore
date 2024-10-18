@@ -4,18 +4,19 @@
 
 	Purpose: monitors a vehicle idle position and removes true when it is idle for too long
 
-	Parametsrs:
-		_vehicle: vehicle object to add monitor too
-		_refuel: automatically refuel the vehicle when it was stuck
-		_repair: automatically repairs the vehicle when it was stuck
+	Parameters:
+		_vehicle: 			Vehicle object to add monitor too
+		_refuel: 			Automatically refuel the vehicle when it was stuck
+		_repair: 			Automatically repairs the vehicle when it was stuck
+		_forcePlaceOnRoad: 	Forces vehicle to be placed on nearby road, facing target direction
 
 	Example: _variableToCheck = [_vehicle] call DGCore_fnc_addIdleMonitor;
 
 	Returns: Variable added to this vehicle. Will be set to 'true' when the vehicle has been idle for too long, 'false' otherwise
 
-	Copyright 2023 by Dagovax
+	Copyright 2024 by Dagovax
 */
-params [["_vehicle", objNull], ["_refuel", false], ["_repair", false]];
+params [["_vehicle", objNull], ["_refuel", false], ["_repair", false], ["_forcePlaceOnRoad", false], ["_targetPos", [-1,-1,-1]]];
 if(isNull _vehicle) exitWith
 {
 	[format["Not enough valid params to add idle checker to vehicle! -> _vehicle = %1", _vehicle], "DGCore_fnc_addIdleMonitor", "error"] call DGCore_fnc_log;
@@ -33,9 +34,9 @@ _vicName = getText (configFile >> "CfgVehicles" >> (typeOf _vehicle) >> "display
 
 _spawnPos = getPos _vehicle; // Get the initial pos;
 
-[_variable, _vehicle, _vicName, _refuel, _repair, _spawnPos] spawn
+[_variable, _vehicle, _vicName, _refuel, _repair, _forcePlaceOnRoad, _targetPos, _spawnPos] spawn
 {
-	params[["_variable", ""],["_vehicle", objNull], ["_vicName", ""], ["_refuel", false], ["_repair", false], "_spawnPos"];
+	params[["_variable", ""],["_vehicle", objNull], ["_vicName", ""], ["_refuel", false], ["_repair", false], ["_forcePlaceOnRoad", false], ["_targetPos", [-1,-1,-1]], "_spawnPos"];
 	if(isNull _vehicle) exitWith
 	{
 		if(DGCore_EnableLogging) then
@@ -51,19 +52,38 @@ _spawnPos = getPos _vehicle; // Get the initial pos;
 	
 	while {true} do
 	{	
-		_currentPos = getPos _vehicle;				
+		if(isNull _vehicle) exitWith{};
+		_currentPos = getPos _vehicle;			
 		if (!alive _vehicle) exitWith
 		{
 			_vehicle setVariable [_variable, true];
 		}; 
+		_handled = _vehicle getVariable [_variable, false];
+		if(_handled)exitWith{}; // Idle monitor already handled. Exit this loop
 		if ((_currentPos distance2D _idlePosition) <= 25) then 
 		{
 			_idleTimer = _idleTimer + 20;
-			if (_idleTimer > (_idleTimeWarning * _idleTimeLog)) then
+			
+			_isRepairing = _vehicle getVariable ["DGCore_vehicleIsRepairing", false];
+			
+			if (!_isRepairing && _idleTimer > (_idleTimeWarning * _idleTimeLog)) then
 			{
 				_idleTimeLog = _idleTimeLog + 1;
 				[format["The %1 is stuck! Idle now for %2 seconds (max=%3)! Current pos= %4", _vicName, _idleTimer, 120, _currentPos], "DGCore_fnc_addIdleMonitor", "warning"] call DGCore_fnc_log;
-				[_vehicle] call DGCore_fnc_unFlipVehicle; // Checks if vehicle needs to be flipped and does unflip
+
+				_nearbyPlayers = [getPos _vehicle, 500] call DGCore_fnc_getNearbyPlayers;
+				
+				// Only unflip vehicle and place on road when no players are nearby!
+				if(count _nearbyPlayers <= 0) then
+				{
+					[_vehicle] call DGCore_fnc_unFlipVehicle; // Checks if vehicle needs to be flipped and does unflip
+					
+					if(_forcePlaceOnRoad) then
+					{
+						[_vehicle, _targetPos, true] call DGCore_fnc_placeVehicleOnRoad;
+						_idlePosition = getPos _vehicle; // Update idle position to new spawned coords...
+					};
+				};
 			};
 		}
 		else
@@ -100,4 +120,4 @@ _spawnPos = getPos _vehicle; // Get the initial pos;
 	};
 };
 
-_variable
+_variable 

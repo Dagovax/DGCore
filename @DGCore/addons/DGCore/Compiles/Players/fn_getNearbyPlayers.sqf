@@ -23,7 +23,7 @@ _nearbyPlayers = allPlayers select {(_x distance _pos) < _radius && alive _x};
 
 if(_nearbyPlayers isEqualTo [] || count _nearbyPlayers == 0) then
 {
-	_alivePlayers = nearestObjects [_pos, DG_playerUnitTypes, _radius ] select{alive _x}; // Select alive units
+	_alivePlayers = nearestObjects [_pos, DG_playerUnitTypes, _radius, true] select{alive _x}; // Select alive units
 	if(count _alivePlayers > 0) then
 	{
 		_nearbyPlayers = _alivePlayers;

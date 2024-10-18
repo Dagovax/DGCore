@@ -65,6 +65,7 @@ if(isNull _group) then // If _group equals Null at this point, create a new grou
 };
 
 _civilian = _group createUnit [_civilianClass, _civilianPos, [], 0, "FORM"]; // Create the unit
+[_civilian] joinSilent _group;
 _civilian allowDamage false; // First initialize this dude.
 _civilian setCaptive _setCaptive;
 _group setCombatMode "BLUE";

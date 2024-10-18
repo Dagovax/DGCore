@@ -4,14 +4,14 @@
 
 	Purpose: To get the nearest ID of airport (to be used for landAt)
 
-	Parametsrs:
-		_center: position to start searching from. Defaults to DG_mapCenter
+	Parameters:
+		_center: 	Position to start searching from. 		| Optional -> Defaults to DG_mapCenter
 
 	Example: _airportID = [_center] call DGCore_fnc_nearestAirportId;
 
 	Returns: nearest airport ID
 
-	Copyright 2023 by Dagovax
+	Copyright 2024 by Dagovax
 */
 
 params[["_center", DG_mapCenter]];

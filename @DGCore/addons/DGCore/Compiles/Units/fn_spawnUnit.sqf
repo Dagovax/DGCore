@@ -4,20 +4,30 @@
 
 	Purpose: spawns an AI at given coordinates
 
-	Parametsrs:
-		_message: message to be logged
-		_scriptName: name of the calling script to be used in logging
-		_type: 
+	Parameters:
+		_pos: 				Spawn position
+		_group: 			Group to spawn unit in
+		_class: 			Unit model class
+		_spawnAsPara:		If set to true, if unit is spawned in the air, it will get a parachute (Duh)
+		_skillSettings:		Array of skill data
+		_weapons:			Array of weapon classes
+		_enableLauncher:	Unit might spawn with launcher (random chance based on _skillSettings)
+		_weapon:			Forced weapon class. Force unit to spawn with this weapon
+		_uniform:			Forced uniform class. Force unit to spawn with this uniform
+		_vest:				Forced vest class. Force unit to spawn with this vest
+		_backpack:			Forced backpack class. Force unit to spawn with this backpack
+		_optic:				Forced optic class. Force unit to spawn with this weapon optic
+		_headGear:			Forced headgear class. Force unit to spawn with this headgear
 
-	Example: ["I am being logged", "DG RoamingAI", "information"] call DGCore_fnc_log;
+	Example: [_pos, _group, "I_soldier_F"] call DGCore_fnc_spawnUnit;
 
 	Returns: Unit
 
-	Copyright 2023 by Dagovax
+	Copyright 2024 by Dagovax
 */
 
-params[["_pos", [0,0,0]], ["_group", grpNull], ["_class", nil], ["_spawnAsPara", false],["_skillSettings", DGCore_AINormalSettings], ["_weapon", ""], ["_uniform", ""], ["_vest", ""], ["_backpack", ""], ["_optic", ""] ,["_headGear", ""]];
-if("_pos" isEqualTo [0,0,0] || isNull _group) exitWith
+params[["_pos", [0,0,0]], ["_group", grpNull], ["_class", nil], ["_spawnAsPara", false],["_skillSettings", DGCore_AINormalSettings], ["_weapons", DGCore_AIWeapons], ["_enableLauncher", DGCore_EnableLaunchers], ["_weapon", ""], ["_uniform", ""], ["_vest", ""], ["_backpack", ""], ["_optic", ""] ,["_headGear", ""]];
+if(_pos isEqualTo [0,0,0] || isNull _group) exitWith
 {
 	[format["Not enough valid params to spawn AI unit! -> _pos = %1 | _group = %2", _pos, _group], "DGCore_fnc_spawnUnit", "error"] call DGCore_fnc_log;
 };
@@ -45,52 +55,67 @@ if (isNil "_maxMoney") then
 _money = ceil(random(_maxMoney));
 
 _unitPos = _pos;
-if(_spawnAsPara) then
+
+if(_unitPos select 2 > 10) then
 {
-	if(_unitPos select 2 > 10) then
-	{
-		_unitPos =  [(_unitPos select 0), (_unitPos select 1), (_unitPos select 2) - 5]; // Spawn below the give position	
-	};
+	_unitPos =  [(_unitPos select 0), (_unitPos select 1), (_unitPos select 2) - 5]; // Spawn below the give position	
 } else
 {
-	if(_unitPos select 2 < 10) then
-	{
-		_unitPos =  [(_unitPos select 0), (_unitPos select 1), 0]; // Spawn at the ground
-	};
+	_unitPos =  [(_unitPos select 0), (_unitPos select 1), 0]; // Spawn at the ground
 };
-_unitClass = selectRandom DGCore_enemyTypes;
+
+private _groupSide = side _group;
+private _unitClass = selectRandom DGCore_enemyTypes;
 if(!isNil "_class") then
 {
 	_unitClass = _class;
 } else
 {
-	if (side _group == DGCore_playerSide) then
+	if(DGCore_modType isEqualTo "default") then
 	{
-		_unitClass = selectRandom DGCore_allyTypes;
+		if(_groupSide isEqualTo east) then
+		{
+			_unitClass = "O_soldier_F";
+		};
+		if(_groupSide isEqualTo west) then
+		{
+			_unitClass = "B_soldier_F";
+		};
+		if(_groupSide isEqualTo resistance) then
+		{
+			_unitClass = "I_soldier_F";
+		};
+	} else
+	{
+		if (_groupSide == DGCore_playerSide) then
+		{
+			_unitClass = selectRandom DGCore_allyTypes;
+		};
 	};
 };
+
 _unit = _group createUnit [_unitClass, _unitPos, [], 0, "FORM"]; // Create the unit
+
+if (_groupSide != DGCore_playerSide) then
+{
+	[_unit] joinSilent _group;
+};
+
 _unit allowDamage false; // First initialize this dude.
 removeAllWeapons _unit;
 removeBackpackGlobal _unit;
 removeVest _unit;
 removeHeadgear _unit;
 removeGoggles _unit;
-//_targetPlayer = _group getVariable "_DGCore_targetPlayer";
+
 [_unit] call DGCore_fnc_addEventHandlers; // Add event handlers
-// if(!isNil "_targetPlayer") then
-// {
-	// [_unit, true, _targetPlayer] call DGCore_fnc_addEventHandlers; // Add event handlers with target player (or friendly player assigned to this group)
-// } else
-// {
-	// [_unit] call DGCore_fnc_addEventHandlers; // Add event handlers
-// };
 
 // Add uniform
 if (_uniform isEqualTo "") then
 {
 	_uniform = selectRandom DGCore_Uniforms;
 };
+
 _unit forceAddUniform _uniform;
 
 // Add vest
@@ -107,17 +132,28 @@ if (_headGear isEqualTo "") then
 };
 _unit addHeadgear _headGear;
 
+// Add backpack
+if (_backpack isEqualTo "") then
+{
+	_backpack = selectRandom DGCore_Backpacks;
+	_unit addBackpackGlobal _backpack;
+};
+
 // Add weapon to this trooper
 if (_weapon isEqualTo "") then
 {
-	_weapon = selectRandom DGCore_AIWeapons;
+	_weapon = selectRandom _weapons;
 };
-_ammo = _weapon call DGCore_fnc_selectMagazine;
+
 for "_i" from 1 to 3 do 
 { 
-	_unit addMagazineGlobal _ammo;
+	private _ammo = [_weapon] call DGCore_fnc_selectMagazine;
+	if !(_ammo isEqualTo "") then
+	{
+		_unit addMagazine _ammo;
+	};
 };
-_unit addWeaponGlobal _weapon;
+_unit addWeapon _weapon;
 
 // Add weapon optics
 if (_optic isEqualTo "") then
@@ -126,31 +162,27 @@ if (_optic isEqualTo "") then
 };
 _unit addPrimaryWeaponItem _optic;
 
-// Add backpack
-if (_backpack isEqualTo "") then
-{
-	_backpack = selectRandom DGCore_Backpacks;
-	_unit addBackpackGlobal _backpack;
-};
-
 // Add launcher
-if(DGCore_EnableLaunchers) then
+if(_enableLauncher) then
 {
 	_percentage = floor random 100;
 	if(_percentage <= _launcherChance) then
 	{
 		_launcherClass = selectRandom DGCore_AILaunchers;
-		_launcherAmmo = _launcherClass call DGCore_fnc_selectMagazine;
 		for "_i" from 1 to 2 do 
-		{ 
-			_unit addMagazine _launcherAmmo;
+		{
+			private _launcherAmmo = [_launcherClass] call DGCore_fnc_selectMagazine;
+			if !(_launcherAmmo isEqualTo "") then
+			{
+				_unit addMagazine _launcherAmmo;
+			};
 		};
 		_unit addWeapon _launcherClass;
 	};
 };
 
 // Add other inventory items
-for "_i" from 1 to _inventoryItems do
+for "_i" from 1 to (_inventoryItems + 2) do
 {
 	_unit addItem (selectRandom DGCore_AIItems);
 };
@@ -159,7 +191,6 @@ _isParatrooper = false;
 if(position _unit select 2 > 5) then // This guy needs a chute
 {
 	_isParatrooper = true;
-	// _unit addBackpack "B_Parachute"; // First parachute lol
 };
 
 // Add money
@@ -195,11 +226,13 @@ _unit enableAI "COVER";
 _unit enableAI "AUTOCOMBAT";
 _unit enableAI "PATH";
 
+[format["Created unit %1 with class %2 and added it to group %3", _unit, _unitClass, _group]] call DGCore_fnc_log;
+
 if(_isParatrooper) then
 {
-	[_unit] spawn
+	[_unit, _uniform, _pos] spawn
 	{
-		params ["_trooper"];
+		params ["_trooper", "_uniform", "_pos"];
 		if(isNil "_trooper" || isNull _trooper) exitWith{};
 		uiSleep 0.4;
 		_chute = createVehicle ["Steerable_Parachute_F", (getPosATL _trooper), [], 0, "NONE"];
@@ -208,6 +241,7 @@ if(_isParatrooper) then
 		_trooper moveInDriver _chute;
 		_chute allowDamage false;
 		uiSleep 0.5;
+		_trooper moveInDriver _chute;
 		_trooper allowDamage true;
 		waitUntil {isTouchingGround _trooper};
 		uiSleep 2;
@@ -217,13 +251,20 @@ if(_isParatrooper) then
 			uiSleep 0.5;
 			deleteVehicle _chute;
 		};
+		_trooper forceAddUniform _uniform;
+		_trooper doMove _pos;
 	};
 } else
 {
-	waitUntil {isTouchingGround _unit};
-	_unit allowDamage true;
+	[_unit, _uniform, _pos] spawn
+	{
+		params ["_unit", "_uniform", "_pos"];
+		if(isNil "_unit" || isNull _unit) exitWith{};
+		waitUntil {isTouchingGround _unit};
+		_unit allowDamage true;
+		_unit forceAddUniform _uniform;
+		_unit doMove _pos;
+	};
 };
-
-[format["Created unit %1 and added it to group %2", _unit, _group]] call DGCore_fnc_log;
 
 _unit

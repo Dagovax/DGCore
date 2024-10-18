@@ -4,7 +4,7 @@
 
 	Purpose: spawns a civilian vehicle (at given coordinates)
 
-	Parametsrs:
+	Parameters:
 		_class: class name of the unit
 		_pos: position to spawn this unit
 		_side: side the AI will be on
@@ -79,8 +79,9 @@ _vehicle setVehicleLock "LOCKED"; // Locked
 	};
 	
 	_nearestBuilding = [_endPos] call DGCore_fnc_nearestBuilding;
+	waitUntil {uiSleep 1; !(isNil "_nearestBuilding")}; // Wait until value retrieved
 	_randomPos = _endPos;
-	if(!isNil "_nearestBuilding") then
+	if(!isNull _nearestBuilding) then
 	{
 		_allBuildingPositions = [_nearestBuilding] call BIS_fnc_buildingPositions;
 		_randomPos = selectRandom _allBuildingPositions;
@@ -90,7 +91,7 @@ _vehicle setVehicleLock "LOCKED"; // Locked
 			_endPos = _randomPos;
 		};
 	};
-	[format["%1 is now driving to their house @ ", group _civilianDriver, name _endLocation], "DGCore_fnc_spawnCivilPatrol", "information"] call DGCore_fnc_log;
+	[format["%1 inside the %2 is now driving to their house @ %3 in %4", group _civilianDriver, _vicName, _endPos, name _endLocation], "DGCore_fnc_spawnCivilPatrol", "information"] call DGCore_fnc_log;
 	_idleVariable = [_vehicle] call DGCore_fnc_addIdleMonitor;
 	_endPositionVariable = [_vehicle, _endPos, 50, true, true, true] call DGCore_fnc_vehicleDoMove;
 	if(isNil "_idleVariable") exitWith
@@ -127,35 +128,10 @@ _vehicle setVehicleLock "LOCKED"; // Locked
 		uiSleep 2;
 	};
 
-	[_vehicle] call DGCore_fnc_addDeletionMonitor;
-	
-	if(!isNull _civilianDriver && alive _civilianDriver) then // Let the civilian slowly move to a house and move him there
-	{	
-		unassignVehicle _civilianDriver;
-		if(vehicle _civilianDriver != _civilianDriver) then
-		{
-			while {vehicle _civilianDriver == _civilianDriver} do // Ensure this dude is out of the vehicle
-			{
-				[_civilianDriver] orderGetIn false;
-				uiSleep 2;
-			};
-		};
-	
-		_dudePos = getPos _civilianDriver;
-		_civilianGroup = group _civilianDriver;
-		if(!isNil "_nearestBuilding") then
-		{
-			_civilianGroup setSpeedMode "LIMITED";
-			_civilianGroup move _randomPos;
-			waitUntil { unitReady _civilianDriver };
-			{deleteVehicle _x;} forEach units _civilianGroup;
-			deleteGroup _civilianGroup;
-		} else
-		{
-			deleteVehicle _civilianDriver;
-			deleteGroup _civilianGroup;
-		};
-	};
+	_civilianGroup = group _civilianDriver;
+	_civilianGroup setVariable ["DGCore_unitReady", true];
+	[_civilianDriver, _randomPos] spawn DGCore_fnc_civilianDoFinalMove;
+	[_vehicle] spawn DGCore_fnc_addDeletionMonitor;
 };
 
 _civilianGroup
