@@ -9,64 +9,84 @@ if (!isServer) exitWith {
 /****************************************************************************************************/
 
 // Generic
-DGCore_DebugMode			= false; // For testing purposes. Do not set this on live server or players will die
-DGCore_CleanupTime			= 5*60; // Time in seconds an object will be timed out for deletion (can be vehicle/unit)
-DGCore_EnableLogging		= true;
-DGCore_LogLevel				= "information"; // choose between:  "information" | "debug" | "errors" | "warnings"
-DGCore_UseDynamicAirports	= true; // If dynamic airports are created for the map, planes will land and take off there too. 
-DGCore_MissionTimeout		= 30*60; // Timeout in seconds of a mission when no player is nearby
-DGCore_PlayerSearchRadius	= 1500; // Distance in meters around missions a player has to be before setting it up/making it active
-DGCore_MarkerColor			= "ColorBrown";
-DGCore_MarkerTextColor		= "ColorWhite";
-DGCore_MarkerCompleteColor	= "ColorBlue";
-DGCore_LootMarkerType		= "mil_box";
-DGCore_LootMarkerColor		= "ColorPink";
-DGCore_LootMarkerUpTime		= 120; 									// Amount of seconds the loot crate marker will be visible. Default = 120 sec (2 minutes)
-DGCore_DummyObjectClass		= "HeliHEmpty";							// Class name we should use for dummies. Invisible objects. Default = "Land_Map_blank_F" (will be visible for a short time only)
+DGCore_DebugMode					= false; 								// For testing purposes. Do not set this on live server or players will die
+DGCore_CleanupTime					= 5*60; 								// Time in seconds an object will be timed out for deletion (can be vehicle). Default = 5 min
+DGCore_BodyCleanupTime				= 10*60;								// Time in seconds dead bodies will be removed/deleted (units only). Default = 10 min
+DGCore_BaseCleanupTime				= 15*60;								// Time in seconds spawned base buildings will remain after a mission ends. Default = 15 min
+DGCore_EnableLogging				= true;
+DGCore_LogLevel						= "information"; 						// choose between:  "information" | "debug" | "errors" | "warnings"
+DGCore_UseDynamicAirports			= true; 								// If dynamic airports are created for the map, planes will land and take off there too. 
+DGCore_MissionTimeout				= 30*60; 								// Timeout in seconds of a mission when no player is nearby
+DGCore_PlayerSearchRadius			= 1500; 								// Distance in meters around missions a player has to be before setting it up/making it active
+DGCore_MarkerType					= "ELLIPSE";							// Marker type
+DGCore_MarkerSize					= [325,325];							// Marker size
+DGCore_MarkerBrush					= "SolidBorder";						// Marker brush
+DGCore_MarkerColors =														// Marker color for the different difficulty levels. DGCore_DefaultDifficulty will be used to pick the color per difficulty
+[ 												
+	"ColorGreen",	// low
+	"ColorYellow",	// medium
+	"ColorOrange",	// high
+	"ColorRed"		// veteran
+];
+DGCore_MarkerDefaultColor			= "ColorBrown";							// Default Marker color, if system fails to find a good one per level
+DGCore_MarkerTextColor				= "ColorWhite";							// Marker text color
+DGCore_MarkerCompleteColor			= "ColorBlue";							// Mission marker complete (text) color
+DGCore_LootMarkerType				= "mil_box";							// Loot marker type
+DGCore_LootMarkerColor				= "ColorPink";							// Loot marker color
+DGCore_LootMarkerUpTime				= 120; 									// Amount of seconds the loot crate marker will be visible. Default = 120 sec (2 minutes)
+DGCore_DummyObjectClass				= "HeliHEmpty";							// Class name we should use for dummies. Invisible objects. Default = "Land_Map_blank_F" (will be visible for a short time only)
 
 // Dynamic Missions Settings
-DGCore_MinPlayerDistance			 = 1000; 						// Minimum distance a mission should spawn away from any player.
-DGCore_MinObjectDistance			 = 65; 							// Minimum distance a mission spawns away from any object.
-DGCore_MinMissionDistance			 = 2000; 						// Missions won't spawn in a position this many meters close to another mission
-DGCore_MinSpawnZoneDistance			 = 1500;						// Missions won't spawn in a position this many meters close to a spawn zone
-DGCore_MinTraderZoneDistance		 = 1500;						// Missions won't spawn in a position this many meters close to a trader zone
-DGCore_MinWaterNearDistance 		 = 75;							// Missions won't spawn in a position this many meters close to water
-DGCore_MinTerritoryDistance			 = 200;							// Missions won't spawn in a position this many meters close to a territory flag. This is a resource intensive check, don't set this value too high!
-DGCore_MinMixerDistance				 = 1000;						// Missions won't spawn in a position this many meters close to a concrete mixer
-DGCore_ContaminatedZoneNearDistance  = 1000;						// Missions won't spawn in a position this many meters close to a contaminated zone
-DGCore_MinSurfaceNormal				 = 0.8; 						// Missions won't spawn in a position where its surfaceNormal is less than this amount. The lower the value, the steeper the location. Greater values means flatter locations. Values can range from 0-1, with 0 being sideways, and 1 being perfectly flat. For reference: SurfaceNormal of about 0.7 is when you are forced to walk up a surface. If you want to convert surfaceNormal to degrees, use the arc-cosine of the surfaceNormal. 0.9 is about 25 degrees. Google "(arccos 0.9) in degrees"
-DGCore_RetriesPerSurfaceNormalLevel	 = 5;							// How many attempts will be done for finding a safe spot per surface normal level. Don't make this too high!
-DGCore_RotBuildingMode 				 = "auto"; 						// Choose between:  "auto" | "up" | "slope" | // Rotate buildings using the spawn position's terrain slope (auto/slope). If set to "up", buildings will be forced set with vector up.
-DGCore_RotBuildingAngle				 = 25; 							// Terrain angle (in rads) from which we place buildings. Buildings placed on terrain higer than this value will be placed vertically.
-DGCore_SpawnZoneMarkerTypes =			
-[	// If you're using custom spawn zone markers, make sure you define them here. CASE SENSITIVE!!!
+DGCore_MinPlayerDistance			 = 1000; 								// Minimum distance a mission should spawn away from any player.
+DGCore_MinObjectDistance			 = 65; 									// Minimum distance a mission spawns away from any object.
+DGCore_MinMissionDistance			 = 2000; 								// Missions won't spawn in a position this many meters close to another mission
+DGCore_MinWaterNearDistance 		 = 75;									// Missions won't spawn in a position this many meters close to water
+DGCore_MinTerritoryDistance			 = 200;									// Missions won't spawn in a position this many meters close to a territory flag. This is a resource intensive check, don't set this value too high!
+DGCore_MinSurfaceNormal				 = 0.8; 								// Missions won't spawn in a position where its surfaceNormal is less than this amount. The lower the value, the steeper the location. Greater values means flatter locations. Values can range from 0-1, with 0 being sideways, and 1 being perfectly flat. For reference: SurfaceNormal of about 0.7 is when you are forced to walk up a surface. If you want to convert surfaceNormal to degrees, use the arc-cosine of the surfaceNormal. 0.9 is about 25 degrees. Google "(arccos 0.9) in degrees"
+DGCore_RetriesPerSurfaceNormalLevel	 = 5;									// How many attempts will be done for finding a safe spot per surface normal level. Don't make this too high!
+DGCore_RotBuildingMode 				 = "auto"; 								// Choose between:  "auto" | "up" | "slope" | // Rotate buildings using the spawn position's terrain slope (auto/slope). If set to "up", buildings will be forced set with vector up.
+DGCore_RotBuildingAngle				 = 25; 									// Terrain angle (in rads) from which we place buildings. Buildings placed on terrain higer than this value will be placed vertically.
+
+// Blacklist zones
+DGCore_MinSpawnZoneDistance			 = 1500;								// Missions won't spawn in a position this many meters close to a spawn zone
+DGCore_SpawnZoneMarkerTypes =												// If you're using custom spawn zone markers, make sure you define them here. CASE SENSITIVE!!!
+[																			
 	"ExileSpawnZoneIcon",
 	"ExileSpawnZone"
 ];
-DGCore_TraderZoneMarkerTypes =			
-[ // If you're using custom trader markers, make sure you define them here. CASE SENSITIVE!!!
+DGCore_MinTraderZoneDistance		 = 1500;								// Missions won't spawn in a position this many meters close to a trader zone
+DGCore_TraderZoneMarkerTypes =												// If you're using custom trader markers, make sure you define them here. CASE SENSITIVE!!!		
+[ 
 	"ExileTraderZoneIcon",
 	"ExileTraderZone"
 ];
-DGCore_MixerMarkerTypes =				
-[ // If you're using custom concrete mixer map markers, make sure you define them here. CASE SENSITIVE!!!
+DGCore_MinMixerDistance				 = 1000;								// Missions won't spawn in a position this many meters close to a concrete mixer
+DGCore_MixerMarkerTypes =													// If you're using custom concrete mixer map markers, make sure you define them here. CASE SENSITIVE!!!		
+[ 
 	"ExileConcreteMixerZoneIcon",
 	"ExileConcreteMixerZone"
 ];
-DGCore_ContaminatedZoneMarkerTypes =	
-[ // If you're using custom contaminated zone markers, make sure you define them here. CASE SENSITIVE!!!
+DGCore_ContaminatedZoneNearDistance  = 1000;								// Missions won't spawn in a position this many meters close to a contaminated zone
+DGCore_ContaminatedZoneMarkerTypes =										// If you're using custom contaminated zone markers, make sure you define them here. CASE SENSITIVE!!!
+[ 
 	"ExileContaminatedZoneIcon",
 	"ExileContaminatedZone"
 ];
+DGCore_BlacklistNearDistance		= 1000;									// Missions won't spawn in a position this many meters close to any of the defined below blacklisted positions
+DGCore_BlacklistPositions =													// If you have specific positions you don't want to use for mission spawning, define them in the array below.
+[
+	//[4072.67,4507.11,0], // EXAMPLE: Napf South airfield
+	//[14617.5,16761.3,0]  // EXAMPLE: Napf international airfield
+];
 
 // Notifications Settings
-DGCore_EnableKillMessage	= true; // Plays a sound and gives the kill message in side chat. 
-DGCore_NotificationAddition	= "settlement"; // Adds additional info in mission spawn message, such as settlement name or grid position. Choose between: "none" | "settlement" | "grid" | "point_of_interest"
-DGCore_EnableKillSound		= true;
-DGCore_EnableDeadSound		= true; // When an AI dies, let him say 'his final words'.
-DGCore_EnemyKillSound		= ["FD_CP_Clear_F"]; // Random sound will play when an enemy got killed.
-DGCore_DeadSound =
-[ // A sound played by the killed unit when he dies. Only applies to allies
+DGCore_EnableKillMessage			= true; 								// Plays a sound and gives the kill message in side chat. 
+DGCore_NotificationAddition			= "settlement"; 						// Adds additional info in mission spawn message, such as settlement name or grid position. Choose between: "none" | "settlement" | "grid" | "point_of_interest"
+DGCore_EnableKillSound				= true;									// Give player that killed AI a sound, defined at DGCore_EnemyKillSound
+DGCore_EnableDeadSound				= true; 								// When an AI dies, let him say 'his final words'.
+DGCore_EnemyKillSound				= ["FD_CP_Clear_F"]; 					// Random sound will play when an enemy got killed.
+DGCore_DeadSound =															// A sound played by the killed unit when he dies. Only applies to allies
+[ 
 	"DG_BeingHit1", "DG_BeingHit2", 
 	"DG_BeingHit3", "DG_BeingHit4", 
 	"DG_BeingHit5", "DG_BeingHit6", 
@@ -79,8 +99,8 @@ DGCore_DeadSound =
 	"DG_US_Dying5", "DG_US_Dying6",
 	"DG_US_Dying7", "DG_US_Dying8"
 ]; 
-DGCore_AllyLostSound = 
-[ // A sound played when you lose an ally. Will be played from the player. 
+DGCore_AllyLostSound = 														 // A sound played when you lose an ally. Will be played from the player. 
+[
 	"DG_JAP_WeAreRunningLowOnReinforce",
 	"DG_JAP_WeAreTakingHeavyCasualities",
 	"DG_RUS_WeAreTakingHeavyCasualities",
@@ -94,44 +114,88 @@ DGCore_AllyLostSound =
 ];
 
 // AI Settings
-DGCore_PlayerExpRange 		= [25000, 75000, 150000]; // Range of the player's experience until it reaches next level. [easy > normal, normal > hard, hard > extreme] (for AI that targets a player)
-DGCore_BaseLevelRange		= [3, 6, 8]; // Range of base level it reaches next difficulty level. [easy > normal, normal > hard, hard > extreme] (used for base raids)
-DGCore_EnableLaunchers		= true; // Set to false to have no AI spawned with launchers. Setting this to true will still check definition below for spawn chance per AI level
-DGCore_FlyHeightRange		= [100, 400]; // A random flyheight will be used
-
-DGCore_AI_WP_Radius_easy	= 20;						// Waypoint radius for "easy" AI.
-DGCore_AI_WP_Radius_normal	= 30;						// Waypoint radius for "normal" AI.
-DGCore_AI_WP_Radius_hard	= 50;						// Waypoint radius for "hard" AI.
-DGCore_AI_WP_Radius_extreme	= 75;						// Waypoint radius for "extreme" AI.
-DGCore_AIEasyTroopCount		= [1,3]; // Array containing min - max troops
-DGCore_AIEasySettings		= [0.3, 1, 100, 0]; // AI easy general level, followed by inventory items | max poptabs | launcher spawn chance 
-DGCore_AINormalTroopCount	= [2,5]; // Array containing min - max troops
-DGCore_AINormalSettings		= [0.5, 2, 250, 12]; // AI normal general level, followed by inventory items | max poptabs | launcher spawn chance 
-DGCore_AIHardTroopCount		= [3,6]; // Array containing min - max troops
-DGCore_AIHardSettings		= [0.7, 3, 500, 25]; // AI hard general level, followed by inventory items | max poptabs | launcher spawn chance 
-DGCore_AIExtremeTroopCount	= [5,10]; // Array containing min - max troops
-DGCore_AIExtremeSettings	= [0.9, 4, 1000, 33]; // AI extreme general level, followed by inventory items | max poptabs | launcher spawn chance 
+DGCore_PlayerExpRange 		= [25000, 75000, 150000]; 						// Range of the player's experience until it reaches next level. [easy > normal, normal > hard, hard > extreme] (for AI that targets a player)
+DGCore_BaseLevelRange		= [3, 6, 8]; 									// Range of base level it reaches next difficulty level. [easy > normal, normal > hard, hard > extreme] (used for base raids)
+DGCore_EnableLaunchers		= true; 										// Set to false to have no AI spawned with launchers. Setting this to true will still check definition below for spawn chance per AI level
+DGCore_FlyHeightRange		= [250, 400]; 									// A random flyheight will be used between these numbers
+DGCore_FlySpeedLimit		= 150; 											// Generic speed limit for air vehicles. 
+DGCore_DefaultDifficulty	= "medium";										// Default difficulty if mission does not supplt one. Choose between [low | medium | high | veteran]
+DGCore_AI_WP_Radius_easy	= 20;											// Waypoint radius for "easy" AI.
+DGCore_AI_WP_Radius_normal	= 30;											// Waypoint radius for "normal" AI.
+DGCore_AI_WP_Radius_hard	= 50;											// Waypoint radius for "hard" AI.
+DGCore_AI_WP_Radius_extreme	= 75;											// Waypoint radius for "extreme" AI.
+DGCore_AIEasyTroopCount		= [1,3]; 										// Array containing min - max troops
+DGCore_AIEasySettings 		= 
+[
+	0.3, 			// General unit skill level
+	1, 				// Inventory items
+	100, 			// Max poptabs
+	0, 				// Launcher spawn chance
+	[0, 1], 		// Amount of ground vehicles that spawn for a mission in array format [min, max]
+	10				// Percentage of vehicle seats used when spawning a vehicle
+];
+DGCore_AINormalTroopCount	= [2,5]; 										// Array containing min - max troops
+DGCore_AINormalSettings		= 
+[
+	0.5, 			// General unit skill level
+	2,              // Inventory items
+	250,            // Max poptabs
+	12,             // Launcher spawn chance
+	[1, 2],         // Amount of ground vehicles that spawn for a mission in array format [min, max]
+	25              // Percentage of vehicle seats used when spawning a vehicle
+];
+DGCore_AIHardTroopCount		= [3,6];									 	// Array containing min - max troops
+DGCore_AIHardSettings 		= 
+[
+	0.7, 			// General unit skill level
+	3,              // Inventory items
+	500,            // Max poptabs
+	25,             // Launcher spawn chance
+	[1, 3],         // Amount of ground vehicles that spawn for a mission in array format [min, max]
+	40              // Percentage of vehicle seats used when spawning a vehicle
+];
+DGCore_AIExtremeTroopCount	= [5,10]; 										// Array containing min - max troops
+DGCore_AIExtremeSettings 	= 
+[
+	0.9, 			// General unit skill level
+	4,              // Inventory items
+	1000,           // Max poptabs
+	33,             // Launcher spawn chance
+	[2, 3],         // Amount of ground vehicles that spawn for a mission in array format [min, max]
+	55              // Percentage of vehicle seats used when spawning a vehicle
+];
 
 // Dynamic Loot
-DGCore_LootBoxTypes			= ["Exile_Container_SupplyBox"];
-DGCore_LootSmokeTypes		= ["SmokeShell", "SmokeShellRed", "SmokeShellGreen", "SmokeShellYellow", "SmokeShellPurple", "SmokeShellBlue", "SmokeShellOrange"];
-DGCore_LootBoxLightTypes	= ["PortableHelipadLight_01_blue_F", "PortableHelipadLight_01_green_F", "PortableHelipadLight_01_red_F", "PortableHelipadLight_01_white_F", "PortableHelipadLight_01_yellow_F", "Land_PortableHelipadLight_01_F"];
-DGCore_CountItemVehicle 	= [3,6]; 		// The amount [min,max] of items that the vehicle will spawn in with
-DGCore_CountBackpackVehicle = [1,3]; 	// The amount [min,max] of backpacks that the vehicle will spawn in with
-DGCore_CountWeaponVehicle 	= [2,4]; 		// The amount [min,max] of weapons that the vehicle will spawn in with
+DGCore_LootBoxTypes			= ["Exile_Container_SupplyBox"];				// Type of loot box crate
+DGCore_LootSmokeTypes = 													// Smoke type to spawn when spawning the lootcrate. A random item will be chosen each drop
+[
+	"SmokeShell", "SmokeShellRed", 
+	"SmokeShellGreen", "SmokeShellYellow", 
+	"SmokeShellPurple", "SmokeShellBlue", 
+	"SmokeShellOrange"
+];
+DGCore_LootBoxLightTypes = 													// Type of light being attached to the lootcrate (until players are nearby + unlocked)
+[
+	"PortableHelipadLight_01_blue_F", "PortableHelipadLight_01_green_F", 
+	"PortableHelipadLight_01_red_F", "PortableHelipadLight_01_white_F", 
+	"PortableHelipadLight_01_yellow_F", "Land_PortableHelipadLight_01_F"
+];
+DGCore_CountItemVehicle 	= [3,6]; 										// The amount [min,max] of items that the vehicle will spawn in with
+DGCore_CountBackpackVehicle = [1,3]; 										// The amount [min,max] of backpacks that the vehicle will spawn in with
+DGCore_CountWeaponVehicle 	= [2,4]; 										// The amount [min,max] of weapons that the vehicle will spawn in with
 
 // Notification Settings
-DGCore_Notification_Title_Color		= "#FFFF00";				// Toast title color for "ExileToast" client notification type. Defaults to yellow (#FFFF00)
-DGCore_Notification_Error_Color		= "#FF0000";				// Toast title color for "ExileToast" client error notification type. Defaults to red (#FF0000)
-DGCore_Notification_Success_Color	= "#0080FF";				// Toast title color for "ExileToast" client success notification type. Defaults to dark blue (#0080FF)
-DGCore_Notification_Title_Size		= 23;						// Size for Client Exile Toasts  mission titles.
-DGCore_Notification_Title_Font		= "puristaMedium";			// Font for Client Exile Toasts  mission titles.
-DGCore_Notification_Message_Color	= "#FFFFFF";				// Toasts color for "ExileToast" client notification type.Defaults to white (#FFFFFF)
-DGCore_Notification_Message_Size	= 19;						// Toasts size for "ExileToast" client notification type.
-DGCore_Notification_Message_Font	= "PuristaLight";			// Toasts font for "ExileToast" client notification type.
+DGCore_Notification_Title_Color		= "#FFFF00";							// Toast title color for "ExileToast" client notification type. Defaults to yellow (#FFFF00)
+DGCore_Notification_Error_Color		= "#FF0000";							// Toast title color for "ExileToast" client error notification type. Defaults to red (#FF0000)
+DGCore_Notification_Success_Color	= "#0080FF";							// Toast title color for "ExileToast" client success notification type. Defaults to dark blue (#0080FF)
+DGCore_Notification_Title_Size		= 23;									// Size for Client Exile Toasts  mission titles.
+DGCore_Notification_Title_Font		= "puristaMedium";						// Font for Client Exile Toasts  mission titles.
+DGCore_Notification_Message_Color	= "#FFFFFF";							// Toasts color for "ExileToast" client notification type.Defaults to white (#FFFFFF)
+DGCore_Notification_Message_Size	= 19;									// Toasts size for "ExileToast" client notification type.
+DGCore_Notification_Message_Font	= "PuristaLight";						// Toasts font for "ExileToast" client notification type.
 
-// List of ammo/magazine classes that will not be picked by DGCore when finding a magazine for a weapon. 
-DGCore_AmmoBlacklist =
+// AI Loadout settings
+DGCore_AmmoBlacklist =														// List of ammo/magazine classes that will not be picked by DGCore when finding a magazine for a weapon. 
 [
 	"Exile_Magazine_Swing",
 	"Exile_Magazine_Boing",

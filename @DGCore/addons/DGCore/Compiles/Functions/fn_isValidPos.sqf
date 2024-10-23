@@ -36,6 +36,15 @@ try
 		_pos set [2, 0];
 	};
 
+	// Check for nearby blaclisted positions
+	if (DGCore_BlacklistNearDistance > 0) then
+	{
+		{
+			private _distance = _x distance2d _pos;
+			if(_distance <= DGCore_BlacklistNearDistance) throw "a blacklisted location";
+		} forEach DGCore_BlacklistPositions;
+	};
+
 	// Check for nearby water
 	if ((DGCore_MinWaterNearDistance > 0) && {[_pos] call DGCore_fnc_isNearWater}) throw "water";
 

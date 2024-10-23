@@ -229,6 +229,13 @@ if(_killed) then
 					};
 				};
 			};
+			
+			// Unit is dead. Now wait until the cleanup time and delete the body
+			uiSleep DGCore_BodyCleanupTime;
+			if !(isNull _unit) then
+			{
+				deleteVehicle _unit;
+			};
 		};
 	}];
 };

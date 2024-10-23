@@ -22,27 +22,29 @@ params
 	"_missionName",  								// The mission name used when creating the marker. Must be unique.
 	"_markerPos",									// Position
 	"_markerLabel",  								// Text used to label the marker
-	["_markerType", "ELLIPSE"],						// Use either the name of the icon or "ELLIPSE" or "RECTANGLE" where non-icon markers are used
-	["_markerSize",[325,325]],						// Marker size
-	["_markerBrush","SolidBorder"],					// Marker brush (for area)
-	["_markerColor", DGCore_MarkerColor], 			// Marker color
+	["_markerType", DGCore_MarkerType],				// Use either the name of the icon or "ELLIPSE" or "RECTANGLE" where non-icon markers are used
+	["_markerSize", DGCore_MarkerSize],				// Marker size
+	["_markerBrush", DGCore_MarkerBrush],			// Marker brush (for area)
+	["_markerColor", DGCore_MarkerDefaultColor], 	// Marker color
 	["_markerTextColor", DGCore_MarkerTextColor]  	// Marker text color
 ];
 
+private _randNum = (1 + random(9999)); // random unique marker number
+
 if (toUpper(_markerType) in ["ELLIPSE","RECTANGLE"]) then // not an Icon .... 
 {
-	_marker1 = createMarker [format ["DGCore_%1_%2_%3", _missionName, _markerPos select 0, _markerPos select 1], _markerPos];
+	_marker1 = createMarker [format ["DGCore_%1_%2_%3_%4", _missionName, _randNum, _markerPos select 0, _markerPos select 1], _markerPos];
 	_marker1 setMarkerShape _markerType;
 	_marker1 setMarkerColor _markerColor;
 	_marker1 setMarkerBrush _markerBrush;
 	_marker1 setMarkerSize _markerSize;
 	
-	_marker2 = createMarker [format ["DGCore_%1_%2_%3_label", _missionName, _markerPos select 0, _markerPos select 1], _markerPos];
+	_marker2 = createMarker [format ["DGCore_%1_%2_%3_%4_label", _missionName, _randNum, _markerPos select 0, _markerPos select 1], _markerPos];
 	_marker2 setMarkerType "mil_dot";
 	_marker2 setMarkerColor _markerTextColor;
 	_marker2 setMarkerText _markerLabel;	
 	
-	_marker3 = createMarker [format ["DGCore_%1_%2_%3_dot", _missionName, _markerPos select 0, _markerPos select 1], _markerPos];
+	_marker3 = createMarker [format ["DGCore_%1_%2_%3_%4_dot", _missionName, _randNum, _markerPos select 0, _markerPos select 1], _markerPos];
 	_marker3 setMarkerType "mil_dot";
 	_marker3 setMarkerColor "ColorBlack";
 	
@@ -52,7 +54,7 @@ if (toUpper(_markerType) in ["ELLIPSE","RECTANGLE"]) then // not an Icon ....
 	_marker1 = "";
 	_marker3 = "";
 	
-	_marker2 = createMarker [format ["DGCore_%1_%2_%3_label", _missionName, _markerPos select 0, _markerPos select 1], _markerPos];
+	_marker2 = createMarker [format ["DGCore_%1_%2_%3_%4_label", _missionName, _randNum, _markerPos select 0, _markerPos select 1], _markerPos];
 	_marker2 setMarkerType _markerType;
 	_marker2 setMarkerColor _markerColor;
 	_marker2 setMarkerText _markerLabel;

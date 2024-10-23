@@ -34,6 +34,7 @@ class CfgFunctions {
 			class setPosAGLS{};
 			class setVectorUp{};
 			class getDummy{};
+			class getMarkerColorByLevel{};
 			class addCrateMarker{};
 			class createMarkerComplete{};
 			class createMarkers{};
@@ -48,6 +49,7 @@ class CfgFunctions {
 			class isValidPos{};
 			class findPosition{};
 			class spawnRandomCamp{};
+			class getDifficultyByLevel{};
 		};
 		class DG_Vehicles {
 			file = "DGCore\Compiles\Vehicles";
@@ -59,6 +61,7 @@ class CfgFunctions {
 			class addMarkerMonitor{};
 			class addUnderTerrainMonitor{};
 			class placeVehicleRelative{};
+			class spawnGroundMissionVehicle{};
 			class spawnHeliDrop{};
 			class spawnAirborneAssault{};
 			class placeVehicleOnRoad{};
@@ -74,6 +77,8 @@ class CfgFunctions {
 			class spawnGroup {};
 			class countAI {};
 			class getUnitInfo {};
+			class getWaypointRadiusByLevel{};
+			class getUnitInfoByLevel {};
 			class civilianDoFinalMove {};
 			class moveGroupInVehicle {};
 			class assignGroupToPlayer {};
@@ -89,6 +94,7 @@ class CfgFunctions {
 			class recruitUnitVehicle{};
 			class addEventHandlers {};
 			class getUnitSkillByLevel {};
+			class getUnitCountByLevel {};
 		};
 		class DG_Utilities {
 			file = "DGCore\Compiles\Utilities";
@@ -96,6 +102,8 @@ class CfgFunctions {
 			class findMods {};
 			class log {};
 			class getInversePos {};
+			class setCrateLock {};
+			class crateIsLocked {};
 			class spawnLootCrate {};
 		};
 		class DG_Players {
@@ -118,6 +126,10 @@ class CfgFunctions {
 			class spawnCastle{};
 			class spawnCUPCastle{};
 			class spawnVilla{};
+			class spawnWalmart{};
+			class spawnGhostVillage{};
+			class spawnLargeFactory{};
+			class spawnSawmill{};
 		};
 	};
 };

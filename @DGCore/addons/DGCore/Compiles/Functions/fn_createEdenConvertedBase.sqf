@@ -39,7 +39,8 @@ private _count = count _buildings;
 private _centerX = _sumX / _count;
 private _centerY = _sumY / _count;
 
-private ["_baseObjects","_firstObjectPos","_firstObjectX","_firstObjectY","_xChange","_yChange","_pos", "_buildings"];
+private ["_baseObjects","_firstObjectPos","_firstObjectX","_firstObjectY","_xChange","_yChange","_pos", "_buildings", "_randomDir"];
+_randomDir = random 360; // unused
 _baseObjects = [];
 
 _xChange = _pos select 0;
@@ -51,13 +52,13 @@ _yChange = _pos select 1;
 	_objPos = [((_x select 1) select 0), ((_x select 1) select 1), 0];
 	
 	_objNewPos = [((_objPos select 0) - _centerX + _xChange), ((_objPos select 1) - _centerY + _yChange),(_objPos select 2)];
+	
 	_obj = createVehicle [_objClass, _objNewPos, [], 0, "CAN_COLLIDE"];
 	_obj allowDamage false;
 	_dir = [(_x select 2)] call DGCore_fnc_vectorToRotation;
 	_obj setDir _dir;
 	
 	_terrainHeight = getTerrainHeightASL [_objNewPos select 0, _objNewPos select 1];
-	
 	_obj setPosASL [_objNewPos select 0, _objNewPos select 1, _terrainHeight];
 		
 	[_obj] call DGCore_fnc_setVectorUp;
@@ -69,3 +70,4 @@ _yChange = _pos select 1;
 } forEach _buildings;
 
 _baseObjects
+

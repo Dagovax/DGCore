@@ -1,3 +1,4 @@
+#define CRATE_ATTACH_OFFSET 0.81
 
 params[["_pos", [-1,-1,-1]], ["_maxMoney", 0], ["_attachSmoke", nil], ["_attachLight", nil], ["_locked", false], ["_lootLauncherCount", 5], ["_lootWeaponCount", 20], ["_lootVestCount", 5], ["_lootBackpackCount", 5], ["_lootAttachmentCount", 6], ["_lootMaterialCount", 20], ["_lootItemCount", 10]];
 if(_pos isEqualTo [-1,-1,-1]) exitWith
@@ -148,13 +149,13 @@ _crateHeight = [_lootCrate] call DGCore_fnc_getObjectHeight;
 if(!isNil "_attachLight" && (_attachLight != "")) then
 {
 	_light = _attachLight createVehicle position _lootCrate;
-    _light attachTo [_lootCrate, [0, 0, _crateHeight]]; // Adjust position if needed
+    _light attachTo [_lootCrate, [0, 0, (_crateHeight - CRATE_ATTACH_OFFSET)]]; // Adjust position if needed
 };
 
 if(!isNil "_attachSmoke" && (_attachSmoke != "")) then
 {
 	_smoke = _attachSmoke createVehicle position _lootCrate;
-	_smoke attachTo [_lootCrate, [0, 0, _crateHeight]]; // Adjust position if needed
+	_smoke attachTo [_lootCrate, [0, 0, (_crateHeight - CRATE_ATTACH_OFFSET)]]; // Adjust position if needed
 };
 
 if(_spawnedInAir) then
@@ -174,10 +175,7 @@ if(_spawnedInAir) then
 	};
 };
 
-if(_locked) then
-{
-	_lootCrate setVariable ["ExileIsLocked", -1,true];
-};
+[_lootCrate, _locked] call DGCore_fnc_setCrateLock; // set crate locked state
 
 [_lootCrate, _attachSmoke, _smoke, _light] spawn
 {
@@ -193,18 +191,18 @@ if(_locked) then
 		
         if (isNull _smoke && {_attachSmoke != ""}) then {
             _smoke = _attachSmoke createVehicle position _crate;
-            _smoke attachTo [_crate, [0, 0, _crateHeight]];
+            _smoke attachTo [_crate, [0, 0, (_crateHeight - CRATE_ATTACH_OFFSET)]];
         };
 		
-		private _isCargoLocked = _crate getVariable ["ExileIsLocked", -1];		
-		if(_isCargoLocked > -1 && !_lootMarkerCreated) then
+		private _isCargoLocked = [_crate] call DGCore_fnc_crateIsLocked;		
+		if(!_isCargoLocked && !_lootMarkerCreated) then
 		{
 			[_crate] call DGCore_fnc_addCrateMarker;
 			_lootMarkerCreated = true;
 		};
 		
 		private _nearbyPlayers = [position _crate, 25] call DGCore_fnc_getNearbyPlayers;
-		if(count _nearbyPlayers > 0 && _isCargoLocked > -1) exitWith{};
+		if(count _nearbyPlayers > 0 && !_isCargoLocked) exitWith{};
 		
 		uiSleep 5;
 	};

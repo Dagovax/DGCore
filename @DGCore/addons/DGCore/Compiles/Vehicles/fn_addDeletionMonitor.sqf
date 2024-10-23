@@ -15,10 +15,16 @@
 
 	Copyright 2023 by Dagovax
 */
+private["_hasDeletionMonitor", "_vehicle", "_killTime", "_cleanUpTime"];
 params [["_vehicle", objNull], ["_killTime", 120], ["_cleanUpTime", DGCore_CleanupTime]];
 if(isNull _vehicle) exitWith
 {
 	[format["Not enough valid params to add vehicle kill checker! -> _vehicle = %1", _vehicle], "DGCore_fnc_addDeletionMonitor", "error"] call DGCore_fnc_log;
+};
+_hasDeletionMonitor = _vehicle getVariable ["DGCore_HasDeletionMonitor", false];
+if(_hasDeletionMonitor) exitWith
+{
+	// Vehicle already has a deletion monitor. Do nothing
 };
 
 [_vehicle, _killTime, _cleanUpTime] spawn
@@ -26,10 +32,11 @@ if(isNull _vehicle) exitWith
 	params ["_vehicle", "_killTime", "_cleanUpTime"];
 	//waitUntil { unitReady _vehicle};
 	[format["Started deletion monitor for: _vehicle = %1 | _killTime = %2 | _cleanUpTime = %3", _vehicle, _killTime, _cleanUpTime], "DGCore_fnc_addDeletionMonitor", "debug"] call DGCore_fnc_log;
-	_killTimer = 0;
-	_vehicleKilled = false;
-	_playerInVehicle = false;
+	private _killTimer = 0;
+	private _vehicleKilled = false;
+	private _playerInVehicle = false;
 	
+	_vehicle setVariable ["DGCore_HasDeletionMonitor", true];
 	_nearbyPlayers = [getPos _vehicle, 4000] call DGCore_fnc_getNearbyPlayers;
 	if(count _nearbyPlayers <= 0) then
 	{
@@ -60,7 +67,10 @@ if(isNull _vehicle) exitWith
 			_killTimer = _killTimer + 5;
 		};
 	};
-	if(_playerInVehicle) exitWith{}; // Already player in vehicle
+	if(_playerInVehicle) exitWith
+	{
+		_vehicle setVariable ["DGCore_HasDeletionMonitor", false];
+	}; // Already player in vehicle
 	
 	_cleanUpTimer = 0;
 	while {!isNull _vehicle} do
@@ -73,6 +83,7 @@ if(isNull _vehicle) exitWith
 		{
 			[format["Players %1 entered the %2. Deletion monitor for this vehicle discontinued!", _playerInVehicle, _vehicle], "DGCore_fnc_addDeletionMonitor", "information"] call DGCore_fnc_log;
 			_playerInVehicle = true;
+			_vehicle setVariable ["DGCore_HasDeletionMonitor", false];
 		};
 		
 		if(_cleanUpTimer >= _cleanUpTime) exitWith
