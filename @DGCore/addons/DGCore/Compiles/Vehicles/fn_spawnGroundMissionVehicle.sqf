@@ -91,7 +91,48 @@ _vicGroup = [DGCore_Side, _spawnPos, _crewCount, nil, _difficulty] call DGCore_f
 	_vehicle disableAI "LIGHTS"; // override AI
 	_vehicle action ["LightOn", _vehicle];
 	
-	[_vicGroup, _targetPos] call DGCore_fnc_addGroupWaypoints;
+	[_vehicle, true, true, true] call DGCore_fnc_addRepairRefuelMonitor;
+	
+	private _idleVariable = [_vehicle, false, false, true, _targetPos] call DGCore_fnc_addIdleMonitor;
+	private _endPositionVariable = [_vehicle, _targetPos, 125, false, false, false] call DGCore_fnc_vehicleDoMove;
+	if(isNil "_idleVariable") exitWith
+	{
+		["Failed to add idle monitor. Check the logs for DGCore_fnc_addIdleMonitor exception messages!", "DGCore_fnc_spawnGroundMissionVehicle", "error"] call DGCore_fnc_log;
+	};
+	if(isNil "_endPositionVariable") exitWith
+	{
+		["Failed to add do move monitor. Check the logs for DGCore_fnc_vehicleDoMove exception messages!", "DGCore_fnc_spawnGroundMissionVehicle", "error"] call DGCore_fnc_log;
+	};
+	waitUntil {uiSleep 1; !(isNil "_idleVariable") && !(isNil "_endPositionVariable")}; // Wait until value retrieved
+	
+	private ["_vehicleIsIdle", "_vehicleReachedTarget"];
+	while {!isNull _vehicle && alive _vehicle} do
+	{
+		_vehicleIsIdle = _vehicle getVariable [_idleVariable, false];
+		_vehicleReachedTarget = _vehicle getVariable [_endPositionVariable, false];
+		
+		if(_vehicleReachedTarget) exitWith
+		{
+			[format["Received positive _vehicleReachedTarget variable! Vehicle %1 reached its target...", _vehicle], "DGCore_fnc_spawnGroundMissionVehicle", "debug"] call DGCore_fnc_log;
+		}; // Vehicle reached the end waypoint. 
+		
+		if(_vehicleIsIdle) exitWith
+		{
+			[format["Received positive _vehicleIsIdle variable! Vehicle %1 is not moving anymore...", _vehicle], "DGCore_fnc_spawnGroundMissionVehicle", "debug"] call DGCore_fnc_log;
+		}; // Vehicle is idle and should be removed
+
+		uiSleep 2;
+	};
+	
+	if(_vehicleIsIdle) exitWith
+	{
+		[_vehicle, 0] call DGCore_fnc_addDeletionMonitor; // Kill vehicle
+	};
+	
+	if(_vehicleReachedTarget) then // Vehicle reached mission site
+	{
+		[_vicGroup, _targetPos] call DGCore_fnc_addGroupWaypoints;
+	};
 };
 
 [format ["Spawned a %1 (%2) at position %3", _vehicleName, _vehicleClass, _spawnPos], "DGCore_fnc_spawnGroundMissionVehicle", "debug"] call DGCore_fnc_log;
