@@ -40,7 +40,8 @@ else
 			[format["Input level = %1 | Resulting unit count will be pulled from %2 | _unitCount = %3", _level, "DGCore_AINormalTroopCount", _unitCount], "DGCore_fnc_getUnitCountByLevel", "debug"] call DGCore_fnc_log;
 		};
 		case "high":
-		{_high;
+		{
+			_unitCount = _high;
 			[format["Input level = %1 | Resulting unit count will be pulled from %2 | _unitCount = %3", _level, "DGCore_AIHardTroopCount", _unitCount], "DGCore_fnc_getUnitCountByLevel", "debug"] call DGCore_fnc_log;
 		};
 		case "veteran":

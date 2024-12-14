@@ -19,7 +19,7 @@ private["_hasDeletionMonitor", "_vehicle", "_killTime", "_cleanUpTime"];
 params [["_vehicle", objNull], ["_killTime", 120], ["_cleanUpTime", DGCore_CleanupTime]];
 if(isNull _vehicle) exitWith
 {
-	[format["Not enough valid params to add vehicle kill checker! -> _vehicle = %1", _vehicle], "DGCore_fnc_addDeletionMonitor", "error"] call DGCore_fnc_log;
+	[format["Deletion monitor was called to a vehicle that does not exist anymore! Skipping whole monitor.."], "DGCore_fnc_addDeletionMonitor", "warning"] call DGCore_fnc_log;
 };
 _hasDeletionMonitor = _vehicle getVariable ["DGCore_HasDeletionMonitor", false];
 if(_hasDeletionMonitor) exitWith

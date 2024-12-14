@@ -15,7 +15,7 @@
 params[["_group", grpNull]];
 if(isNull _group) exitWith
 {
-	[format["Not enough valid params to find player group leader! -> _group == undefined"], "DGCore_fnc_getPlayerGroupLeader", "error"] call DGCore_fnc_log;
+	//[format["Not enough valid params to find player group leader! -> _group == undefined"], "DGCore_fnc_getPlayerGroupLeader", "error"] call DGCore_fnc_log;
 	objNull
 };
 
